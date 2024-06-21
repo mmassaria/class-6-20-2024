@@ -1,0 +1,48 @@
+---
+title: "Top 10 spotify artists comapred to Track Score"
+execute: 
+  echo: false
+---
+
+```{r}
+#| message: false
+library(tidyverse)
+library(ggplot2)
+library(readr)
+music_data <- read_csv("Most Streamed Spotify Songs 2024.csv")
+```
+
+```{r}
+artist_summary <- music_data %>%
+  group_by(Artist) %>%
+  summarise(Total_Score = sum(`Track Score`, na.rm = TRUE)) %>%
+  arrange(desc(Total_Score)) %>%
+  slice(1:10)
+
+# Define a custom color palette
+custom_colors <- c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", 
+                   "#ffd92f", "#e5c494", "#b3b3b3", "#1f78b4", "#33a02c")
+
+# Plot the results with enhancements
+ggplot(artist_summary, aes(x = reorder(Artist, Total_Score), y = Total_Score, fill = Artist)) +
+  geom_bar(stat = "identity", color = "black") +
+  geom_text(aes(label = round(Total_Score, 1)), hjust = -0.2, color = "black", size = 5) +
+  coord_flip() +
+  labs(
+    title = "Top 10 Spotify Artists Compared to Track Score",
+    subtitle = "Based on All Time Rank",
+    x = "Artist",
+    y = "Total Track Score"
+  ) +
+  theme_minimal(base_size = 15) +
+  scale_fill_manual(values = custom_colors) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size = 20, face = "bold"),
+    plot.subtitle = element_text(size = 15),
+    axis.title.x = element_text(size = 15),
+    axis.title.y = element_text(size = 15),
+    plot.margin = margin(t = 20, r = 40, b = 20, l = 20)
+  )
+```
+
